@@ -44,7 +44,10 @@ const handleComplete =(e, todo)=>{
       <TextInput placeholder="search" style={styles.input}>
         
       </TextInput>
-      <ScrollView>
+      <ScrollView style={{width: "80%"}}>
+      {todoList.map((todo, i) => (
+          <Text key={i} style={styles.todoText}>
+            {todo.title}
         <TouchableOpacity onPress= {(e)=>handleEdite(e,todo)}>
           <Ionicons name="pencil-outline" size={30} color="#000" />
         </TouchableOpacity>
@@ -54,9 +57,7 @@ const handleComplete =(e, todo)=>{
         <TouchableOpacity onPress= {(e)=>handleComplete(e,todo)}>
           <Ionicons name="checkbox" size={30} color="#000" />
         </TouchableOpacity>
-        {todoList.map((todo, i) => (
-          <Text key={i} style={styles.todoText}>
-            {todo.title}
+        
           </Text>
         ))}
       </ScrollView>
@@ -99,5 +100,6 @@ const styles = StyleSheet.create({
     width: 400,
     padding: 10,
     margin: 25,
+    flexDirection: "row",
   },
 });

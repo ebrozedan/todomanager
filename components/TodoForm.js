@@ -13,6 +13,7 @@ import {
   FlatList 
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { createTodos } from '../lib/features/TodoList/service';
 
 const { width } = Dimensions.get('window');
 
@@ -30,11 +31,11 @@ const PRIORITIES = [
   { id: 'high', name: 'High', color: '#FF6B6B' },
 ];
 
-const TodoForm = ({ navigation, addTodo, editingTodo, onSubmit, onCancel }) => {
-  const [text, setText] = useState(editingTodo ? editingTodo.text : '');
-  const [selectedCategory, setSelectedCategory] = useState(editingTodo?.category || CATEGORIES[0]);
-  const [priority, setPriority] = useState(editingTodo?.priority || PRIORITIES[0]);
-  const [dueDate, setDueDate] = useState(editingTodo?.dueDate || null);
+const TodoForm = ({ navigation }) => {
+  const [text, setText] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState(CATEGORIES[0]);
+  const [priority, setPriority] = useState( PRIORITIES[0]);
+  const [dueDate, setDueDate] = useState( null);
   const [taskList, setTaskList] = useState([]);  // New state to hold tasks
   const inputAnimation = useRef(new Animated.Value(0)).current;
   const buttonAnimation = useRef(new Animated.Value(0)).current;
@@ -57,13 +58,15 @@ const TodoForm = ({ navigation, addTodo, editingTodo, onSubmit, onCancel }) => {
   const handleSubmit = () => {
     if (text.trim()) {
       const todo = {
-        id: Math.random().toString(), // Generate a unique ID
-        text,
+        title: text,
         category: selectedCategory,
         priority,
         dueDate,
+        completed: false,
       };
-      addTodo(todo); // Add the task using the parent function
+      createTodos(todo);
+      navigation.goBack();
+      // Add the task using the parent function
       setTaskList((prevTasks) => [...prevTasks, todo]);  // Add the task to the state directly
       setText('');
       Alert.alert('Task Added', 'Your task has been successfully added!');
@@ -133,15 +136,14 @@ const TodoForm = ({ navigation, addTodo, editingTodo, onSubmit, onCancel }) => {
 
       <Animated.View style={{ opacity: buttonAnimation, transform: [{ scale: buttonAnimation }] }}>
         <TouchableOpacity onPress={handleSubmit} style={styles.addButton}>
-          <Text style={styles.buttonText}>{editingTodo ? 'Update' : 'Add Task'}</Text>
+          <Text style={styles.buttonText}>Add Task</Text>
         </TouchableOpacity>
       </Animated.View>
 
-      {editingTodo && (
-        <TouchableOpacity onPress={onCancel} style={[styles.button, styles.cancelButton]}>
+       <TouchableOpacity onPress={()=>navigation.goBack()} style={[styles.button, styles.cancelButton]}>
           <Text style={styles.buttonText}>Cancel</Text>
         </TouchableOpacity>
-      )}
+      
 
       {/* Task List */}
       <FlatList
